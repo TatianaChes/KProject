@@ -1,54 +1,35 @@
 package com.example.qr;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.Point;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.InsetDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
-import android.text.Editable;
-import android.text.InputType;
-import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.text.format.Time;
 import android.util.Log;
 import android.view.Display;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.google.zxing.WriterException;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -90,7 +71,6 @@ public class Generate extends AppCompatActivity {
         }
         SpinnerChoise("Материал",editMaterial, mDb);
         SpinnerChoise("Заказ",editOrder, mDb); // заполнение спиннеров при открытии
-
         SpinnerChoise("Поставщик",editProvider, mDb);
 
 
@@ -324,6 +304,8 @@ public class Generate extends AppCompatActivity {
         editHardness.setText("");
         editDiametr.setText("");
         qrCodeIV.setImageBitmap(null);
+        editOrder.setSelection(editOrder.getCount() - 1);
+        editProvider.setSelection(editProvider.getCount() - 1);
     }
 
     private void Initiating() { // инициализация
@@ -350,10 +332,12 @@ public class Generate extends AppCompatActivity {
 
     @SuppressLint("Range")
     private void SpinnerChoise(String NameTable, Spinner spinner,SQLiteDatabase mDb) { // метод заполнения спиннеров
+
         String query = "SELECT * FROM " + NameTable;// запрос
         List<String> list = new ArrayList<String>() ; // динамический массив
         Cursor cur = mDb.rawQuery(query, null);
         Integer j=0;
+        list.add("");
         // перебираем все строки и добавляем в список
         if (cur.moveToFirst()) {
             do {
@@ -363,10 +347,10 @@ public class Generate extends AppCompatActivity {
             } while (cur.moveToNext());
         }
 
-        list.add("");
         // установка данных
         ArrayAdapter<String> adapt = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, list);
         spinner.setAdapter(adapt);
+        spinner.setSelection(spinner.getCount() - 1);
     }
 
     private static String getRandomString(final int sizeOfRandomString) { // метод генерации id
